@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>OSM with Search & Autocomplete</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    html, body { height:100%; margin:0; font-family: Arial, sans-serif; }
+    #map { height:100%; width:100%; }
+
+    /* Floating Search Bar */
+    .search-box {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: #fff;
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      width: 420px;
+      max-width: 90%;
+      padding: 6px 12px;
+    }
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 20px;
+    }
+    .search-btn {
+      margin-left: 8px;
+      padding: 10px 14px;
+      border-radius: 50%;
+      background: #4285f4;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .search-btn:hover {
+      background: #3367d6;
+    }
+
+    /* Autocomplete dropdown */
+    .suggestions {
+      position: absolute;
+      top: 58px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 420px;
+      max-width: 90%;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 1200;
+      overflow: hidden;
+    }
+    .suggestion-item {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .suggestion-item:hover {
+      background: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Search Bar -->
+  <div class="search-box">
+    <input id="search" class="search-input" type="text" placeholder="Search for a place...">
+    <button class="search-btn">🔍</button>
+  </div>
+  <!-- Autocomplete Suggestions -->
+  <div id="suggestions" class="suggestions" style="display:none;"></div>
+  
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Init Map
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // India center
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    let marker;
+
+    const searchInput = document.getElementById("search");
+    const suggestionsBox = document.getElementById("suggestions");
+
+    // Fetch autocomplete suggestions from Photon API
+    searchInput.addEventListener("input", async () => {
+      const query = searchInput.value;
+      if (query.length < 3) {
+        suggestionsBox.style.display = "none";
+        return;
+      }
+      const res = await fetch(`https://photon.komoot.io/api/?q=${query}&limit=5`);
+      const data = await res.json();
+
+      // Show suggestions
+      suggestionsBox.innerHTML = "";
+      if (data.features.length > 0) {
+        suggestionsBox.style.display = "block";
+        data.features.forEach(f => {
+          const item = document.createElement("div");
+          item.className = "suggestion-item";
+          item.innerText = f.properties.name + (f.properties.country ? ", " + f.properties.country : "");
+          item.addEventListener("click", () => {
+            const [lon, lat] = f.geometry.coordinates;
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lon]).addTo(map).bindPopup(item.innerText).openPopup();
+            map.setView([lat, lon], 13);
+            suggestionsBox.style.display = "none";
+            searchInput.value = item.innerText;
+          });
+          suggestionsBox.appendChild(item);
+        });
+      } else {
+        suggestionsBox.style.display = "none";
+      }
+    });
+
+    // Search button click
+    document.querySelector(".search-btn").addEventListener("click", async () => {
+      const query = searchInput.value;
+      if (!query) return;
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+      const results = await res.json();
+      if (results.length > 0) {
+        const lat = results[0].lat, lon = results[0].lon;
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lon]).addTo(map).bindPopup(query).openPopup();
+        map.setView([lat, lon], 13);
+      }
+    });
+  </script>
+</body>
+</html>
