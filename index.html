@@ -7,68 +7,109 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
-    html, body { height:100%; margin:0; font-family: Arial, sans-serif; }
-    #map { height:100%; width:100%; }
+    html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
 
-    /* Floating Search Bar */
-    .search-box {
-      position: absolute;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      background: #fff;
-      border-radius: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      width: 420px;
-      max-width: 90%;
-      padding: 6px 12px;
-    }
-    .search-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 20px;
-    }
-    .search-btn {
-      margin-left: 8px;
-      padding: 10px 14px;
-      border-radius: 50%;
-      background: #4285f4;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .search-btn:hover {
-      background: #3367d6;
-    }
+#map {
+  height: 100%;
+  width: 100%;
+}
 
-    /* Autocomplete dropdown */
-    .suggestions {
-      position: absolute;
-      top: 58px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 420px;
-      max-width: 90%;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      z-index: 1200;
-      overflow: hidden;
-    }
-    .suggestion-item {
-      padding: 10px;
-      cursor: pointer;
-    }
-    .suggestion-item:hover {
-      background: #f1f1f1;
-    }
+/* Floating Search Bar */
+.search-box {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: #fff;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  width: 90%;
+  max-width: 420px;
+  padding: 4px 8px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.search-btn {
+  margin-left: 8px;
+  padding: 10px 12px;
+  border-radius: 50%;
+  background: #4285f4;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.search-btn:hover {
+  background: #3367d6;
+}
+
+/* Autocomplete dropdown */
+.suggestions {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 420px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  z-index: 1200;
+  overflow: hidden;
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background: #f1f1f1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .search-box {
+    top: 10px;
+    padding: 4px 6px;
+  }
+
+  .search-input {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .search-btn {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+
+  .suggestions {
+    top: 54px;
+  }
+
+  .suggestion-item {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
   </style>
 </head>
 <body>
