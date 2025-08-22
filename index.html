@@ -169,7 +169,7 @@
         suggestionsBox.style.display = "none";
       }
     });
-
+    map.zoomControl.setPosition('bottomright');
     // Search button click
     document.querySelector(".search-btn").addEventListener("click", async () => {
       const query = searchInput.value;
